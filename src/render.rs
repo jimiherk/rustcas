@@ -14,9 +14,9 @@ pub fn render_latex(expr: Expr) -> String {
             let left = render_latex(*left);
             let right = render_latex(*right);
             match op {
-                crate::parser::BinaryOpKind::Add => format!("{} + {}", left, right),
-                crate::parser::BinaryOpKind::Sub => format!("{} - {}", left, right),
-                crate::parser::BinaryOpKind::Mul => format!("{} \\cdot {}", left, right),
+                crate::parser::BinaryOpKind::Add => format!("({} + {})", left, right),
+                crate::parser::BinaryOpKind::Sub => format!("({} - {})", left, right),
+                crate::parser::BinaryOpKind::Mul => format!("({} \\cdot {})", left, right),
                 crate::parser::BinaryOpKind::Div => format!("\\frac{{ {} }}{{ {} }}", left, right),
             }
         }
@@ -25,11 +25,11 @@ pub fn render_latex(expr: Expr) -> String {
             let args = args.iter().map(|arg| render_latex(arg.clone())).collect::<Vec<String>>().join(", ");
             if let Expr::Var(name) = *func {
                 if is_elementary_function(&name) {
-                    return format!("{}({})", render_elementary_function(&name), args);
+                    return format!("{}\\left({}\\right)", render_elementary_function(&name), args);
                 }
-                return format!("{}({})", name, args);
+                return format!("{}\\left({}\\right)", name, args);
             }
-            format!("({})({})", f, args)
+            format!("\\left[{}\\right]\\left({}\\right)", f, args)
         }
         Expr::UnaryOp(op, expr) => {
             let expr = render_latex(*expr);

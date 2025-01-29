@@ -11,7 +11,7 @@ mod render;
 mod simplify;
 
 fn main() {
-    let source = "exp(ln(x) * x*exp(x))";
+    let source = "a * (b + c)";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -25,6 +25,6 @@ fn main() {
     println!("{:?}", expression);
     println!("{:?}", differentiate(expression.clone(), "x".to_string()));
     println!("{}", render_latex(differentiate(expression.clone(), "x".to_string())));
-    println!("{}", render_latex(simplify(differentiate(expression, "x".to_string()))));
+    println!("{}", render_latex(simplify(expression)));
 
 }
