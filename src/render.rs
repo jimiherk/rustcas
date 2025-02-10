@@ -18,6 +18,7 @@ pub fn render_latex(expr: Expr) -> String {
                 crate::parser::BinaryOpKind::Sub => format!("({} - {})", left, right),
                 crate::parser::BinaryOpKind::Mul => format!("({} \\cdot {})", left, right),
                 crate::parser::BinaryOpKind::Div => format!("\\frac{{ {} }}{{ {} }}", left, right),
+                crate::parser::BinaryOpKind::Pow => format!("({}^{})", left, right),
             }
         }
         Expr::Call(func, args) => {

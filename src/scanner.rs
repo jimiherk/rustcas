@@ -4,7 +4,7 @@ use std::path::Path;
 pub enum TokenType {
     // Single-character tokens.
     LeftParen, RightParen,
-    Comma, Dot, Minus, Plus, Semicolon, Slash, Star,
+    Comma, Dot, Minus, Plus, Semicolon, Slash, Star, Power,
 
     // One or two character tokens.
     Equal,
@@ -71,6 +71,7 @@ impl<'src> Scanner<'src> {
             b'/' => self.make_token(TokenType::Slash),
             b'*' => self.make_token(TokenType::Star),
             b'=' => self.make_token(TokenType::Equal),
+            b'^' => self.make_token(TokenType::Power),
             c if is_digit(c) => self.number(),
             c if is_alpha(c) => self.identifier(),
             _ => self.error_token("Unexpected character."),

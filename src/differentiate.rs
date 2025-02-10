@@ -21,16 +21,19 @@ pub fn differentiate(expr: Expr, var: String) -> Expr {
 fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var: String) -> Expr {
     match op {
         crate::parser::BinaryOpKind::Add => Expr::BinaryOp(
+            // (a + b)' = a' + b'
             crate::parser::BinaryOpKind::Add,
             Box::new(differentiate(left, var.clone())),
             Box::new(differentiate(right, var)),
         ),
         crate::parser::BinaryOpKind::Sub => Expr::BinaryOp(
+            // (a - b)' = a' - b'
             crate::parser::BinaryOpKind::Sub,
             Box::new(differentiate(left, var.clone())),
             Box::new(differentiate(right, var)),
         ),
         crate::parser::BinaryOpKind::Mul => Expr::BinaryOp(
+            // (a * b)' = a' * b + a * b'
             crate::parser::BinaryOpKind::Add,
             Box::new(Expr::BinaryOp(
                 crate::parser::BinaryOpKind::Mul,
@@ -44,6 +47,7 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
             )),
         ),
         crate::parser::BinaryOpKind::Div => {
+            // (f / g)' = (f' * g - f * g') / (g * g)
             let left_diff = differentiate(left.clone(), var.clone());
             let right_diff = differentiate(right.clone(), var.clone());
             let left_mul_right = Expr::BinaryOp(
@@ -67,6 +71,9 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
                 Box::new(right.clone()),
             );
             Expr::BinaryOp(crate::parser::BinaryOpKind::Div, Box::new(numerator), Box::new(denominator))
+        }, crate::parser::BinaryOpKind::Pow => {
+            // TODO add differentiation for exponents
+            panic!("Not implemented")
         }
     }
 }

@@ -7,6 +7,7 @@ pub enum BinaryOpKind {
     Sub,
     Mul,
     Div,
+    Pow,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -51,6 +52,7 @@ impl<'src> Parser<'src> {
     fn addition(&mut self) -> Expr {
         let mut value = self.multiplication();
 
+
         while self.match_token(TokenType::Minus) {
             value = Expr::BinaryOp(BinaryOpKind::Sub, Box::new(value), Box::new(self.multiplication()));
         }
@@ -63,7 +65,7 @@ impl<'src> Parser<'src> {
     }
 
     fn multiplication(&mut self) -> Expr {
-        let mut value = self.unary();
+        let mut value = self.power();
 
         while self.match_token(TokenType::Slash) {
             value = Expr::BinaryOp(BinaryOpKind::Div, Box::new(value), Box::new(self.unary()));
@@ -71,6 +73,16 @@ impl<'src> Parser<'src> {
 
         while self.match_token(TokenType::Star) {
             value = Expr::BinaryOp(BinaryOpKind::Mul, Box::new(value), Box::new(self.unary()));
+        }
+
+        value
+    }
+
+    fn power(&mut self) -> Expr {
+        let mut value = self.unary();
+
+        while self.match_token(TokenType::Power) {
+            value = Expr::BinaryOp(BinaryOpKind::Pow, Box::new(value), Box::new(self.unary()));
         }
 
         value
