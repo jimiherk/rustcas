@@ -13,6 +13,7 @@ pub fn simplify(expr: Expr) -> Expr {
                 (BinaryOpKind::Sub, Expr::Number(a), Expr::Number(b)) => Expr::Number(a - b),
                 (BinaryOpKind::Mul, Expr::Number(a), Expr::Number(b)) => Expr::Number(a * b),
                 (BinaryOpKind::Div, Expr::Number(a), Expr::Number(b)) => Expr::Number(a / b),
+                (BinaryOpKind::Pow, Expr::Number(a), Expr::Number(b)) => Expr::Number(a.powf(b)),
                 (BinaryOpKind::Mul, Expr::Number(0.0), _) => Expr::Number(0.0),
                 (BinaryOpKind::Mul, _, Expr::Number(0.0)) => Expr::Number(0.0),
                 (BinaryOpKind::Mul, Expr::Number(1.0), right) => right,
