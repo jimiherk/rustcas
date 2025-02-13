@@ -16,7 +16,7 @@ mod substitute;
 
 #[tokio::main]
 async fn main() {
-    let source = "2 * x";
+    let source = "x^2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
