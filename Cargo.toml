@@ -8,3 +8,4 @@ reqwest = "0.12.12"
 log = "0.4.25"
 dotenv = "0.15.0"
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
+integrate = "0.1.7"

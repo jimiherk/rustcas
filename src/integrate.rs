@@ -1,18 +1,21 @@
 extern crate dotenv;
 
-use dotenv::dotenv;
-use std::env;
 use crate::parser::Expr;
-use crate::render::render_text;
+use crate::simplify::simplify;
+use crate::substitute::substitute;
 
-pub async fn integrate(expr: Expr, var: String, lower: i32, upper: i32) -> Result<String, reqwest::Error> {
-    dotenv().ok();
-    let url = format!("http://api.wolframalpha.com/v1/result?appid={}&i=integrate+{}+d{}+from+{}+to+{}", env::var("WA_APP_ID").unwrap(), render_text(expr), var, lower, upper);
-
-    let res = reqwest::get(url)
-        .await?
-        .text()
-        .await?;
-
-    Ok(res)
+pub fn integrate(expr: Expr, var: String, lower: f64, upper: f64) -> Result<Expr, String> {
+    let mut result = 0.0;
+    let mut x = lower;
+    let dx = 0.0001;
+    while x < upper {
+        let y = simplify(substitute(expr.clone(), var.clone(), Expr::Number(x)));
+        if let Expr::Number(value) = y {
+            result += value * dx;
+        } else {
+            return Err("Integration failed: expression did not simplify to a number".to_string());
+        }
+        x += dx;
+    }
+    Ok(Expr::Number(result))
 }

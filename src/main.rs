@@ -3,6 +3,7 @@ use crate::render::{render_text, render_latex};
 use crate::scanner::Scanner;
 use crate::simplify::simplify;
 use crate::integrate::integrate;
+use crate::parser::Expr;
 
 mod scanner;
 mod parser;
@@ -11,10 +12,11 @@ mod eval;
 mod render;
 mod simplify;
 mod integrate;
+mod substitute;
 
 #[tokio::main]
 async fn main() {
-    let source = "x + 2";
+    let source = "2 * x";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -33,5 +35,11 @@ async fn main() {
     println!("{}", render_latex(simplify(expression)));
     */
 
-    println!("{}", integrate(expression, "x".to_string(), 0, 1).await.unwrap());
+    let int = integrate(expression, "x".to_string(), 0.0, 3.0);
+
+    if let Ok(Expr::Number(value)) = int {
+        println!("{}", value);
+    } else {
+        println!("Error: {}", int.unwrap_err());
+    }
 }

@@ -65,3 +65,4 @@ fn simplify_call(func: Expr, args: &Vec<Expr>) -> Expr {
         _ => Expr::Call(Box::new(func.clone()), args.clone()),
     }
 }
+
