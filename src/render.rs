@@ -18,7 +18,6 @@ pub fn render_latex(expr: Expr) -> String {
                 crate::parser::BinaryOpKind::Sub => format!("({} - {})", left, right),
                 crate::parser::BinaryOpKind::Mul => format!("({} \\cdot {})", left, right),
                 crate::parser::BinaryOpKind::Div => format!("\\frac{{ {} }}{{ {} }}", left, right),
-                crate::parser::BinaryOpKind::Pot => format!("{}^{}", left, right),
             }
         }
         Expr::Call(func, args) => {
@@ -53,7 +52,6 @@ pub fn render_text(expr: Expr) -> String {
                 crate::parser::BinaryOpKind::Sub => format!("({} minus {})", left, right),
                 crate::parser::BinaryOpKind::Mul => format!("({} times {})", left, right),
                 crate::parser::BinaryOpKind::Div => format!("({} divided by {})", left, right),
-                crate::parser::BinaryOpKind::Pot => format!("{}^{}", left, right),
             }
         }
         Expr::Call(func, args) => {

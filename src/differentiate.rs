@@ -67,40 +67,6 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
                 Box::new(right.clone()),
             );
             Expr::BinaryOp(crate::parser::BinaryOpKind::Div, Box::new(numerator), Box::new(denominator))
-        },
-        crate::parser::BinaryOpKind::Pot => {
-            let left = left.clone();
-            let right = right.clone();
-            let left_diff = differentiate(left.clone(), var.clone());
-            let right_diff = differentiate(right.clone(), var.clone());
-            let left_pow_right = Expr::BinaryOp(
-                crate::parser::BinaryOpKind::Pot,
-                Box::new(left.clone()),
-                Box::new(right.clone()),
-            );
-            let left_mul_right_pow_left_sub_one = Expr::BinaryOp(
-                crate::parser::BinaryOpKind::Mul,
-                Box::new(left_diff),
-                Box::new(Expr::BinaryOp(
-                    crate::parser::BinaryOpKind::Pot,
-                    Box::new(left.clone()),
-                    Box::new(Expr::BinaryOp(
-                        crate::parser::BinaryOpKind::Sub,
-                        Box::new(right.clone()),
-                        Box::new(Number(1.0)),
-                    )),
-                )),
-            );
-            let right_mul_left_pow_right = Expr::BinaryOp(
-                crate::parser::BinaryOpKind::Mul,
-                Box::new(right_diff),
-                Box::new(left_pow_right),
-            );
-            Expr::BinaryOp(
-                crate::parser::BinaryOpKind::Add,
-                Box::new(left_mul_right_pow_left_sub_one),
-                Box::new(right_mul_left_pow_right),
-            )
         }
     }
 }
