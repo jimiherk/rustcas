@@ -1,11 +1,9 @@
-use std::collections::HashMap;
 use crate::differentiate::differentiate;
-use crate::integrate::integrate;
-use crate::parser::Expr;
-use crate::plot::substitute_for_variable;
-use crate::render::render_latex;
+use crate::render::{render_text, render_latex};
 use crate::scanner::Scanner;
 use crate::simplify::simplify;
+use crate::integrate::integrate;
+use crate::parser::Expr;
 
 mod scanner;
 mod parser;
@@ -14,14 +12,11 @@ mod eval;
 mod render;
 mod simplify;
 mod integrate;
-mod evaluate;
-mod constants;
-mod plot;
+mod substitute;
 
-fn main() {
-    // let source = "a * (b + c)";
-    // let source = "5 * (x^2) + 2 * x + 7";
-    let source = "y * (x + 5)";
+#[tokio::main]
+async fn main() {
+    let source = "2 * x";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -33,12 +28,18 @@ fn main() {
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
-    let mut variables = HashMap::new();
-    variables.insert("x".to_string(), Expr::Number(5.0));
-    variables.insert("y".to_string(), Expr::Number(3.5));
+    /*
+    println!("{:?}", expression);
+    println!("{:?}", differentiate(expression.clone(), "x".to_string()));
+    println!("{}", render_latex(differentiate(expression.clone(), "x".to_string())));
+    println!("{}", render_latex(simplify(expression)));
+    */
 
-    println!("expression: {:?}", expression);
-    println!("expression: {:?}", substitute_for_variable(expression, &variables));
+    let int = integrate(expression, "x".to_string(), 0.0, 3.0);
 
-
+    if let Ok(Expr::Number(value)) = int {
+        println!("{}", value);
+    } else {
+        println!("Error: {}", int.unwrap_err());
+    }
 }

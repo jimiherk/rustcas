@@ -41,6 +41,34 @@ pub fn render_latex(expr: Expr) -> String {
     }
 }
 
+pub fn render_text(expr: Expr) -> String {
+    match expr {
+        Expr::Number(n) => n.to_string(),
+        Expr::Var(v) => v,
+        Expr::BinaryOp(op, left, right) => {
+            let left = render_text(*left);
+            let right = render_text(*right);
+            match op {
+                crate::parser::BinaryOpKind::Add => format!("({} plus {})", left, right),
+                crate::parser::BinaryOpKind::Sub => format!("({} minus {})", left, right),
+                crate::parser::BinaryOpKind::Mul => format!("({} times {})", left, right),
+                crate::parser::BinaryOpKind::Div => format!("({} divided by {})", left, right),
+            }
+        }
+        Expr::Call(func, args) => {
+            let f = render_text(*func.clone());
+            let args = args.iter().map(|arg| render_text(arg.clone())).collect::<Vec<String>>().join(", ");
+            format!("{}({})", f, args)
+        }
+        Expr::UnaryOp(op, expr) => {
+            let expr = render_text(*expr);
+            match op {
+                crate::parser::UnaryOpKind::Neg => format!("-{}", expr),
+            }
+        }
+    }
+}
+
 fn render_elementary_function(name: &str) -> String {
     match name {
         "exp" => "\\exp".to_string(),
