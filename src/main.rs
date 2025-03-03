@@ -19,7 +19,7 @@ mod plot;
 fn main() {
     // let source = "a * (b + c)";
     // let source = "(x^3) + 3 * (x^2) + 2";
-    let source = "cos(x)";
+    let source = "3^x";
     // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
