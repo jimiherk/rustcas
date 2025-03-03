@@ -9,7 +9,7 @@ pub fn integrate(expr: Expr, var: String, lower: f64, upper: f64) -> Result<Expr
     let mut x = lower;
     let dx = 0.0001;
     while x < upper {
-        let y = simplify(substitute(expr.clone(), var.clone(), Expr::Number(x)));
+        let y = simplify(substitute(expr.clone(), var.clone(), Expr::Number(x)), false);
         if let Expr::Number(value) = y {
             result += value * dx;
         } else {

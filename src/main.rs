@@ -14,10 +14,13 @@ mod simplify;
 mod integrate;
 mod substitute;
 mod constants;
+mod plot;
 
-#[tokio::main]
-async fn main() {
-    let source = "2 * x";
+fn main() {
+    // let source = "a * (b + c)";
+    // let source = "(x^3) + 3 * (x^2) + 2";
+    let source = "cos(x)";
+    // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -28,4 +31,7 @@ async fn main() {
     }
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
+
+    println!("expression: {:?}", expression.clone());
+    println!("{}", render_latex(simplify(differentiate(expression.clone(), "x".to_string()), false)));
 }

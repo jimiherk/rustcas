@@ -114,7 +114,7 @@ fn diff_function(expr: Expr, args: Vec<Expr>, var: String) -> Expr {
 }
 
 pub fn is_elementary_function(name: &str) -> bool {
-    name == "exp" || name == "ln" || name == "id"
+    name == "exp" || name == "ln" ||  name == "sin" || name == "cos" || name == "id"
 }
 
 fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) -> Expr {
@@ -131,6 +131,8 @@ fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) 
                 panic!("log function can only have one argument");
             }
         },
+        "sin" => Expr::Var("cos".to_string()),
+        "cos" => Expr::Var("-sin".to_string()),
         _ => panic!("Not implemented"),
     }
 }
