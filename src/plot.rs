@@ -3,7 +3,7 @@ use crate::parser::{BinaryOpKind, Expr};
 use std::collections::HashMap;
 use image::{RgbImage, Rgb, GenericImage};
 
-fn substitute_for_variable(expr: Expr, variables: &HashMap<String, Expr>) -> Expr {
+pub fn substitute_for_variable(expr: Expr, variables: &HashMap<String, Expr>) -> Expr {
     match expr {
         Expr::Var(var) => {
             if let Some(value) = variables.get(&var) {
@@ -40,7 +40,7 @@ pub fn values_table(expr: Expr) -> (Vec<Expr>, Vec<Expr>) {
         x_values.push(Expr::Number(i));
         y_values.push(simplified_expr);
 
-        i += 0.1;
+        i += 0.01;
     }
 
     (x_values, y_values)
@@ -49,35 +49,71 @@ pub fn values_table(expr: Expr) -> (Vec<Expr>, Vec<Expr>) {
 pub fn plot(expr: Expr) {
     let (x_values, y_values) = values_table(expr);
 
-    let width = 200;  // Image width (adjust as needed)
-    let height = 200; // Image height (adjust as needed)
+    let width = 800;
+    let height = 800;
 
     let mut img = RgbImage::new(width, height);
 
-    let scale_x = width as f64 / 10.0;  // Maps x from [-5,5] to [0,200]
-    let scale_y = height as f64 / 10.0; // Maps y from [-5,5] to [0,200]
+    // Determine min and max y-values dynamically
+    let min_y = y_values.iter()
+        .filter_map(|y| if let Expr::Number(v) = y { Some(*v) } else { None })
+        .fold(f64::INFINITY, f64::min);
+    let max_y = y_values.iter()
+        .filter_map(|y| if let Expr::Number(v) = y { Some(*v) } else { None })
+        .fold(f64::NEG_INFINITY, f64::max);
 
-    let offset_x = width as f64 / 2.0;  // Centers x at 0
-    let offset_y = height as f64 / 2.0;
+    let min_x = -5.0;
+    let max_x = 5.0;
 
+    // New dynamic scaling
+    let scale_x = (width - 1) as f64 / (max_x - min_x);
+    let scale_y = (height - 1) as f64 / (max_y - min_y);
+
+    let offset_x = -min_x * scale_x;  // Shift x to fit within range
+    let offset_y = -min_y * scale_y;  // Shift y accordingly
+
+    // Background
     for x in 0..width {
         for y in 0..height {
-            img.put_pixel(x, y, Rgb([255, 255, 255])); // White background
+            img.put_pixel(x, y, Rgb([255, 255, 255])); // White
         }
     }
 
-    for x in 0..width {
-        for y in 0..height {
-            if (x == width / 2 || y == height / 2) {
-                img.put_pixel(x, y, Rgb([128, 128, 128])); // White background
+    println!("Debugging x_values and y_values:");
+
+    for (x_expr, y_expr) in x_values.iter().zip(y_values.iter()) {
+        if let (Expr::Number(x), Expr::Number(y)) = (x_expr, y_expr) {
+            println!("x: {:.2}, y: {:.2}", x, y);
+        } else {
+            println!("Non-numeric expression encountered!");
+        }
+    }
+
+
+    // Find the x=0 index
+    let mut y_axis_pixel_x = None;
+    for (i, x_expr) in x_values.iter().enumerate() {
+        if let Expr::Number(x) = x_expr {
+            if x.abs() < 0.05 { // Close to zero
+                y_axis_pixel_x = Some(((*x - min_x) * scale_x) as u32);
+                break;
             }
         }
     }
 
+    // Draw the Y-axis at the correct x-position
+    if let Some(y_axis_x) = y_axis_pixel_x {
+        if y_axis_x < width {
+            for y in 0..height {
+                img.put_pixel(y_axis_x, y, Rgb([128, 128, 128])); // Gray Y-axis
+            }
+        }
+    }
+    // Plot points
     for (x_expr, y_expr) in x_values.iter().zip(y_values.iter()) {
         if let (Expr::Number(x), Expr::Number(y)) = (x_expr, y_expr) {
-            let pixel_x = (*x * scale_x + offset_x) as u32;
-            let pixel_y = height.saturating_sub((*y * scale_y + offset_y) as u32); // Flip y-axis
+            let pixel_x = ((*x - min_x) * scale_x) as u32;
+            let pixel_y = height.saturating_sub(((*y - min_y) * scale_y) as u32);
 
             if pixel_x < width && pixel_y < height {
                 img.put_pixel(pixel_x, pixel_y, Rgb([0, 0, 255])); // Blue pixel
@@ -85,11 +121,5 @@ pub fn plot(expr: Expr) {
         }
     }
 
-    img.put_pixel(0, 0, Rgb([0, 0, 255]));
-    img.put_pixel(199, 0, Rgb([0, 0, 255]));
-    img.put_pixel(0, 199, Rgb([0, 0, 255]));
-    img.put_pixel(199, 199, Rgb([0, 0, 255]));
-
     img.save("graph.png").unwrap();
-
 }

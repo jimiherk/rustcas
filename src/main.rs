@@ -1,5 +1,7 @@
+use std::collections::HashMap;
 use crate::differentiate::differentiate;
-use crate::plot::{plot, values_table};
+use crate::parser::Expr;
+use crate::plot::{plot, substitute_for_variable, values_table};
 use crate::render::render_latex;
 use crate::scanner::Scanner;
 use crate::simplify::simplify;
@@ -15,8 +17,9 @@ mod plot;
 
 fn main() {
     // let source = "a * (b + c)";
-    // let source = "5 * (x^2) + 2 * x + 7";
-    let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
+    // let source = "(x^3) + 3 * (x^2) + 2";
+    let source = "2 * x^3 - 3*x^2 + 4*x +100";
+    // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -28,18 +31,15 @@ fn main() {
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
+    println!("expression: {:?}", expression.clone());
 
-    println!("expression: {:?}", expression);
-    println!("expression: {:?}", simplify(expression.clone(), false));
+    let mut variables = HashMap::new();
+    variables.insert("x".to_string(), Expr::Number(3.0)); // Example: x = 3
 
-    plot(expression.clone());
+    // Perform substitution
+    let substituted_expr = substitute_for_variable(expression.clone(), &variables);
 
-    // let (x_values, y_values) = values_table(expression);
-    //
-    // // Print x-values and corresponding y-values
-    // for (x, y) in x_values.iter().zip(y_values.iter()) {
-    //     println!("{:?}: {:?}", x, y);
-    // }
+    plot(expression)
 }
 
 
