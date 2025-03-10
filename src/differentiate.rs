@@ -104,7 +104,7 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
                     )),
                     Box::new(Expr::BinaryOp(
                         crate::parser::BinaryOpKind::Mul,
-                        Box::new(Expr::Var("ln".to_string())), // ln(f(x)) represented as a variable
+                        Box::new(Expr::Var("ln".to_string())),
                         Box::new(base.clone()),
                     )),
                 )),
@@ -171,7 +171,7 @@ fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) 
             }
         },
         "sin" => Expr::Var("cos".to_string()),
-        "cos" => Expr::Var("-sin".to_string()),
+        "cos" => Expr::UnaryOp(crate::parser::UnaryOpKind::Neg, Box::new(Expr::Var("sin".to_string()))),
         _ => panic!("Not implemented"),
     }
 }
