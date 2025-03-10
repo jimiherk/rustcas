@@ -1,22 +1,21 @@
 import { invoke } from "@tauri-apps/api/core";
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+async function calculate() {
+  const input = new URLSearchParams(window.location.search).get("input");
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
+  if (input) {
+    const result = await invoke("calculate", {
+      input: input,
+    }) as string;
+
+    document.querySelector("#solution")!.textContent = result;
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
+document.querySelector('form')!.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const result = await invoke("calculate", {
+    input: document.querySelector('input[type="text"]')!.value,
+  }) as string;
+  document.querySelector("#solution")!.textContent = result;
 });
