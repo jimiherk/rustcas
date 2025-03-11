@@ -1,6 +1,7 @@
 use crate::differentiate::is_elementary_function;
 use crate::parser::Expr;
 
+// Rendert einen Ausdruck in LaTeX
 pub fn render_latex(expr: Expr) -> String {
     match expr {
         Expr::Number(n) => n.to_string(),
@@ -41,6 +42,7 @@ pub fn render_latex(expr: Expr) -> String {
     }
 }
 
+// Rendert elementare Funktionen in LaTeX
 fn render_elementary_function(name: &str) -> String {
     match name {
         "exp" => "\\exp".to_string(),
@@ -48,6 +50,6 @@ fn render_elementary_function(name: &str) -> String {
         "cos" => "\\cos".to_string(),
         "ln" => "\\ln".to_string(),
         "id" => "\\mathrm{id}".to_string(),
-        _ => panic!("Not implemented"),
+        _ => panic!("Nicht implementiert"),
     }
 }

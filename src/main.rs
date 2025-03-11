@@ -23,6 +23,7 @@ fn main() {}
 
 #[wasm_bindgen]
 pub fn differentiate_expression(expression: String, variable: String) -> String {
+    // Scanner initialisieren und Token sammeln
     let mut scanner = Scanner::new(&expression);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -31,15 +32,18 @@ pub fn differentiate_expression(expression: String, variable: String) -> String 
             break;
         }
     }
+    // Parser initialisieren und Ausdruck parsen
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
+    // Ausdruck differenzieren und als LaTeX rendern
     let diff = differentiate(expression.clone(), variable);
     render_latex(simplify(diff.clone(), false))
 }
 
 #[wasm_bindgen]
 pub fn integrate_expression(expression: String, variable: String, lower: f64, upper: f64) -> String {
+    // Scanner initialisieren und Token sammeln
     let mut scanner = Scanner::new(&expression);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -48,9 +52,11 @@ pub fn integrate_expression(expression: String, variable: String, lower: f64, up
             break;
         }
     }
+    // Parser initialisieren und Ausdruck parsen
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
+    // Ausdruck integrieren und als LaTeX rendern
     if let Ok(integral) = integrate(expression.clone(), variable, lower, upper) {
         return render_latex(simplify(integral.clone(), false));
     }
@@ -59,6 +65,7 @@ pub fn integrate_expression(expression: String, variable: String, lower: f64, up
 
 #[wasm_bindgen]
 pub fn simplify_expression(expression: String) -> String {
+    // Scanner initialisieren und Token sammeln
     let mut scanner = Scanner::new(&expression);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -67,14 +74,17 @@ pub fn simplify_expression(expression: String) -> String {
             break;
         }
     }
+    // Parser initialisieren und Ausdruck parsen
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
+    // Ausdruck vereinfachen und als LaTeX rendern
     render_latex(simplify(expression.clone(), false))
 }
 
 #[wasm_bindgen]
 pub fn plot_expression(expression: String) -> Vec<u8> {
+    // Scanner initialisieren und Token sammeln
     let mut scanner = Scanner::new(&expression);
     let mut tokens = vec![];
     while let token = scanner.scan_token() {
@@ -83,8 +93,10 @@ pub fn plot_expression(expression: String) -> Vec<u8> {
             break;
         }
     }
+    // Parser initialisieren und Ausdruck parsen
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
+    // Ausdruck plotten
     plot(expression)
 }

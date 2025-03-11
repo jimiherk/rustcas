@@ -4,13 +4,14 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use image::{RgbImage, Rgb, GenericImage, ImageFormat};
 
+// Ersetzt Variablen in einem Ausdruck durch gegebene Werte
 pub fn substitute_for_variable(expr: Expr, variables: &HashMap<String, Expr>) -> Expr {
     match expr {
         Expr::Var(var) => {
             if let Some(value) = variables.get(&var) {
                 value.clone()
             } else {
-                panic!("Variable {} not found", var);
+                panic!("Variable {} nicht gefunden", var);
             }
         }
         Expr::BinaryOp(op, left, right) => {
@@ -24,13 +25,14 @@ pub fn substitute_for_variable(expr: Expr, variables: &HashMap<String, Expr>) ->
     }
 }
 
+// Erstellt eine Wertetabelle für einen Ausdruck
 pub fn values_table(expr: Expr) -> (Vec<Expr>, Vec<Expr>) {
-    // TODO add iteration over the expression to find all the variables
-    // for now the function only works for the variable x
+    // TODO: Iteration über den Ausdruck hinzufügen, um alle Variablen zu finden
+    // Derzeit funktioniert die Funktion nur für die Variable x
 
     let mut x_values: Vec<Expr> = Vec::new();
     let mut y_values: Vec<Expr> = Vec::new();
-    // i am lowkey sorry about this code
+    // Entschuldigung für diesen Code
     let mut i = -5.0;
     while i <= 5.0 {
         let mut variables = HashMap::new();
@@ -47,6 +49,7 @@ pub fn values_table(expr: Expr) -> (Vec<Expr>, Vec<Expr>) {
     (x_values, y_values)
 }
 
+// Plottet einen Ausdruck und gibt das Bild als Byte-Array zurück
 pub fn plot(expr: Expr) -> Vec<u8> {
     let (x_values, y_values) = values_table(expr);
 
@@ -55,7 +58,7 @@ pub fn plot(expr: Expr) -> Vec<u8> {
 
     let mut img = RgbImage::new(width, height);
 
-    // Determine min and max y-values dynamically
+    // Bestimmt dynamisch die minimalen und maximalen y-Werte
     let min_y = y_values.iter()
         .filter_map(|y| if let Expr::Number(v) = y { Some(*v) } else { None })
         .fold(f64::INFINITY, f64::min);
@@ -66,58 +69,58 @@ pub fn plot(expr: Expr) -> Vec<u8> {
     let min_x = -5.0;
     let max_x = 5.0;
 
-    // New dynamic scaling
+    // Neue dynamische Skalierung
     let scale_x = (width - 1) as f64 / (max_x - min_x);
     let scale_y = (height - 1) as f64 / (max_y - min_y);
 
-    let offset_x = -min_x * scale_x;  // Shift x to fit within range
-    let offset_y = -min_y * scale_y;  // Shift y accordingly
+    let offset_x = -min_x * scale_x;  // Verschiebt x, um in den Bereich zu passen
+    let offset_y = -min_y * scale_y;  // Verschiebt y entsprechend
 
-    // Background
+    // Hintergrund
     for x in 0..width {
         for y in 0..height {
-            img.put_pixel(x, y, Rgb([255, 255, 255])); // White
+            img.put_pixel(x, y, Rgb([255, 255, 255])); // Weiß
         }
     }
 
-    println!("Debugging x_values and y_values:");
+    println!("Debugging x_values und y_values:");
 
     for (x_expr, y_expr) in x_values.iter().zip(y_values.iter()) {
         if let (Expr::Number(x), Expr::Number(y)) = (x_expr, y_expr) {
             println!("x: {:.2}, y: {:.2}", x, y);
         } else {
-            println!("Non-numeric expression encountered!");
+            println!("Nicht-numerischer Ausdruck gefunden!");
         }
     }
 
-
-    // Find the x=0 index
+    // Findet den Index für x=0
     let mut y_axis_pixel_x = None;
     for (i, x_expr) in x_values.iter().enumerate() {
         if let Expr::Number(x) = x_expr {
-            if x.abs() < 0.05 { // Close to zero
+            if x.abs() < 0.05 { // Nahe null
                 y_axis_pixel_x = Some(((*x - min_x) * scale_x) as u32);
                 break;
             }
         }
     }
 
-    // Draw the Y-axis at the correct x-position
+    // Zeichnet die Y-Achse an der richtigen x-Position
     if let Some(y_axis_x) = y_axis_pixel_x {
         if y_axis_x < width {
             for y in 0..height {
-                img.put_pixel(y_axis_x, y, Rgb([128, 128, 128])); // Gray Y-axis
+                img.put_pixel(y_axis_x, y, Rgb([128, 128, 128])); // Graue Y-Achse
             }
         }
     }
-    // Plot points
+
+    // Plottet Punkte
     for (x_expr, y_expr) in x_values.iter().zip(y_values.iter()) {
         if let (Expr::Number(x), Expr::Number(y)) = (x_expr, y_expr) {
             let pixel_x = ((*x - min_x) * scale_x) as u32;
             let pixel_y = height.saturating_sub(((*y - min_y) * scale_y) as u32);
 
             if pixel_x < width && pixel_y < height {
-                img.put_pixel(pixel_x, pixel_y, Rgb([0, 0, 255])); // Blue pixel
+                img.put_pixel(pixel_x, pixel_y, Rgb([0, 0, 255])); // Blauer Pixel
             }
         }
     }

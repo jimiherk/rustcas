@@ -2,14 +2,14 @@ use std::path::Path;
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq, Hash)]
 pub enum TokenType {
-    // Single-character tokens.
+    // Einzeichen-Token.
     LeftParen, RightParen,
     Comma, Dot, Minus, Plus, Semicolon, Slash, Star, Power,
 
-    // One or two character tokens.
+    // Ein- oder zweizeichen-Token.
     Equal,
 
-    // Literals.
+    // Literale.
     Identifier, Number,
 
     Eof, Error
@@ -24,6 +24,7 @@ pub struct Token<'src> {
 }
 
 impl<'src> Token<'src> {
+    // Erzeugt ein synthetisches Token für Fehler
     pub fn synthetic(text: &'src str) -> Token<'src> {
         Token {
             kind: TokenType::Error,
@@ -43,6 +44,7 @@ pub(crate) struct Scanner<'src> {
 }
 
 impl<'src> Scanner<'src> {
+    // Erstellt einen neuen Scanner für die angegebene Quelltextzeichenkette
     pub fn new(source: &'src str) -> Scanner<'src> {
         Scanner {
             source,
@@ -53,6 +55,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Scannt das nächste Token aus der Quelltextzeichenkette
     pub fn scan_token(&mut self) -> Token<'src> {
         self.skip_whitespace();
         self.start = self.current;
@@ -78,14 +81,17 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Überprüft, ob das Ende der Quelltextzeichenkette erreicht ist
     fn is_at_end(&self) -> bool {
         self.current >= self.source.len()
     }
 
+    // Gibt das aktuelle Lexem zurück
     fn lexeme(&self) -> &'src str {
         &self.source[self.start..self.current]
     }
 
+    // Erstellt ein Token des angegebenen Typs
     fn make_token(&self, kind: TokenType) -> Token<'src> {
         Token {
             kind,
@@ -95,6 +101,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Gibt das nächste Zeichen in der Quelltextzeichenkette zurück, ohne den aktuellen Index zu erhöhen
     fn peek(&self) -> u8 {
         if self.is_at_end() {
             b'\0'
@@ -103,6 +110,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Gibt das übernächste Zeichen in der Quelltextzeichenkette zurück, ohne den aktuellen Index zu erhöhen
     fn peek_next(&self) -> u8 {
         if self.current + 1 >= self.source.len() {
             b'\0'
@@ -111,6 +119,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Erstellt ein Fehler-Token mit der angegebenen Fehlermeldung
     fn error_token(&self, message: &'static str) -> Token<'src> {
         Token {
             kind: TokenType::Error,
@@ -120,6 +129,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Erhöht den aktuellen Index und gibt das aktuelle Zeichen zurück
     fn advance(&mut self) -> u8 {
         let c = self.source.as_bytes()[self.current];
         self.current += 1;
@@ -127,6 +137,7 @@ impl<'src> Scanner<'src> {
         c
     }
 
+    // Überprüft, ob das nächste Zeichen dem erwarteten Zeichen entspricht, und erhöht den aktuellen Index, falls dies der Fall ist
     fn matches(&mut self, expected: u8) -> bool {
         if self.is_at_end() || self.peek() != expected {
             return false;
@@ -137,6 +148,7 @@ impl<'src> Scanner<'src> {
         true
     }
 
+    // Überspringt Leerzeichen und Kommentare in der Quelltextzeichenkette
     fn skip_whitespace(&mut self) {
         while !self.is_at_end() {
             match self.peek() {
@@ -154,7 +166,7 @@ impl<'src> Scanner<'src> {
                     }
                 },
                 b'/' if self.peek_next() == b'*' => {
-                    // Also supports nested comments
+                    // Unterstützt auch verschachtelte Kommentare
                     let mut depth = 1;
                     while depth > 0 && !self.is_at_end() {
                         if self.peek() == b'/' && self.peek_next() == b'*' {
@@ -175,6 +187,7 @@ impl<'src> Scanner<'src> {
         }
     }
 
+    // Scannt eine Zahl aus der Quelltextzeichenkette
     fn number(&mut self) -> Token<'src> {
         while is_digit(self.peek()) {
             self.advance();
@@ -190,6 +203,7 @@ impl<'src> Scanner<'src> {
         self.make_token(TokenType::Number)
     }
 
+    // Scannt einen Bezeichner aus der Quelltextzeichenkette
     fn identifier(&mut self) -> Token<'src> {
         while is_alpha_numeric(self.peek()) {
             self.advance();
@@ -198,19 +212,23 @@ impl<'src> Scanner<'src> {
         self.make_token(self.identifier_type())
     }
 
+    // Bestimmt den Typ des Bezeichners
     fn identifier_type(&self) -> TokenType {
         TokenType::Identifier
     }
 }
 
+// Überprüft, ob ein Zeichen eine Ziffer ist
 fn is_digit(c: u8) -> bool {
     c.is_ascii_digit()
 }
 
+// Überprüft, ob ein Zeichen ein Buchstabe oder Unterstrich ist
 fn is_alpha(c: u8) -> bool {
     c.is_ascii_alphabetic() || c == b'_'
 }
 
+// Überprüft, ob ein Zeichen eine alphanumerische Zeichen ist
 fn is_alpha_numeric(c: u8) -> bool {
     is_alpha(c) || is_digit(c)
 }

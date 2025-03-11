@@ -4,12 +4,16 @@ use crate::parser::{BinaryOpKind, Expr};
 pub fn simplify(expr: Expr, s: bool) -> Expr {
     // s = simplify_elementary_function
     match expr {
+        // Wenn die Expression eine Zahl ist, wird sie unverändert zurückgegeben
         Expr::Number(_) => expr,
+        // Wenn die Expression eine Variable ist, wird sie unverändert zurückgegeben
         Expr::Var(_) => expr,
+        // Wenn die Expression eine binäre Operation ist, wird die Vereinfachung rekursiv auf die Operanden angewendet
         Expr::BinaryOp(op, left, right) => {
             let left = simplify(*left, s);
             let right = simplify(*right, s);
             match (op, left.clone(), right.clone()) {
+                // Vereinfachung von Additionen, Subtraktionen, Multiplikationen, Divisionen und Potenzen
                 (BinaryOpKind::Add, Expr::Number(a), Expr::Number(b)) => Expr::Number(a + b),
                 (BinaryOpKind::Sub, Expr::Number(a), Expr::Number(b)) => Expr::Number(a - b),
                 (BinaryOpKind::Mul, Expr::Number(a), Expr::Number(b)) => Expr::Number(a * b),
@@ -27,6 +31,7 @@ pub fn simplify(expr: Expr, s: bool) -> Expr {
                 _ => Expr::BinaryOp(op, Box::new(left), Box::new(right)),
             }
         }
+        // Wenn die Expression ein Funktionsaufruf ist, wird die Vereinfachung rekursiv auf die Argumente angewendet
         Expr::Call(func, args) => {
             let value = simplify_call(*func, &args, s);
             match value {
@@ -34,6 +39,7 @@ pub fn simplify(expr: Expr, s: bool) -> Expr {
                 _ => simplify(value, s),
             }
         }
+        // Wenn die Expression eine unäre Operation ist, wird die Vereinfachung rekursiv auf die innere Expression angewendet
         Expr::UnaryOp(op, expr) => {
             let expr = simplify(*expr, s);
             match (op, expr.clone()) {
