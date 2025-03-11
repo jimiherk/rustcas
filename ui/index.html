@@ -8,10 +8,18 @@
 </head>
 <body>
     <h1>RustCAS™️</h1>
-    <form action="sol.html">
+    <form id="inputForm" onsubmit="event.preventDefault();">
+        <select name="operation" id="operation">
+            <option selected>Vereinfachen</option>
+            <option>Ableiten</option>
+            <option>Integrieren</option>
+        </select>
         <input type="text" name="input" id="input" placeholder="Gib eine Gleichung ein">
         <input type="submit" value="=">
     </form>
+    <div id="output">
+
+    </div>
 </body>
 <script type="module" src="/src/main.ts"></script>
 </html>

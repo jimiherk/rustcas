@@ -18,6 +18,15 @@
         width: 50%;
     }
 
+    select {
+        font-size: 1em;
+        padding: 0.5em;
+        border: 3px solid #000;
+        border-radius: 5px;
+        margin-right: .5em;
+        outline: none;
+    }
+
     form input[type="text"] {
         font-size: 1em;
         padding: 0.5em;
