@@ -27,7 +27,7 @@
         outline: none;
     }
 
-    form input[type="text"] {
+    form input[type="text"], input[type="number"] {
         font-size: 1em;
         padding: 0.5em;
         border: 3px solid #000;
@@ -35,6 +35,10 @@
         margin-right: .5em;
         outline: none;
         flex-grow: 1;
+    }
+
+    input[type="number"] {
+        width: 5ch;
     }
 
     form input[type=submit] {
@@ -52,4 +56,8 @@
 
     form input[type=submit]:hover {
         background-color: #00a;
+    }
+
+    .hidden {
+        display: none;
     }
