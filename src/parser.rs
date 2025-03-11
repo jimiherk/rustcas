@@ -1,7 +1,7 @@
 use crate::scanner::{Token, TokenType};
 
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, PartialOrd)]
 pub enum BinaryOpKind {
     Add,
     Sub,
@@ -10,12 +10,12 @@ pub enum BinaryOpKind {
     Pow,
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, PartialOrd)]
 pub enum UnaryOpKind {
     Neg,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
 pub enum Expr {
     Number(f64),
     BinaryOp(BinaryOpKind, Box<Expr>, Box<Expr>),
@@ -68,11 +68,11 @@ impl<'src> Parser<'src> {
         let mut value = self.power();
 
         while self.match_token(TokenType::Slash) {
-            value = Expr::BinaryOp(BinaryOpKind::Div, Box::new(value), Box::new(self.unary()));
+            value = Expr::BinaryOp(BinaryOpKind::Div, Box::new(value), Box::new(self.power()));
         }
 
         while self.match_token(TokenType::Star) {
-            value = Expr::BinaryOp(BinaryOpKind::Mul, Box::new(value), Box::new(self.unary()));
+            value = Expr::BinaryOp(BinaryOpKind::Mul, Box::new(value), Box::new(self.power()));
         }
 
         value

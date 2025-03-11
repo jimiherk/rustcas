@@ -4,6 +4,7 @@ use crate::scanner::Scanner;
 use crate::simplify::simplify;
 use crate::integrate::integrate;
 use crate::parser::Expr;
+use crate::plot::{plot, substitute_for_variable, values_table};
 
 use wasm_bindgen::prelude::*;
 
@@ -21,7 +22,7 @@ mod plot;
 fn main() {
     // let source = "a * (b + c)";
     // let source = "(x^3) + 3 * (x^2) + 2";
-    let source = "5*(x^2)";
+    let source = "2 * x^3 - 3*x^2 + 4*x +100";
     // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
@@ -34,9 +35,15 @@ fn main() {
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
-    let diff = differentiate(expression.clone(), "x".to_string());
-    println!("{}", render_latex(diff.clone()));
-    println!("{}", render_latex(simplify(diff.clone(), false)));
+    println!("expression: {:?}", expression.clone());
+
+    let mut variables = HashMap::new();
+    variables.insert("x".to_string(), Expr::Number(3.0)); // Example: x = 3
+
+    // Perform substitution
+    let substituted_expr = substitute_for_variable(expression.clone(), &variables);
+
+    plot(expression)
 }
 
 #[wasm_bindgen]
