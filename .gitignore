@@ -1,8 +1,7 @@
 /target
 .idea/
 Cargo.lock
-*.http
 .env
 node_modules/
-pkg
+wasm/
 pnpm-lock.yaml
