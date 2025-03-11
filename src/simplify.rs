@@ -1,5 +1,4 @@
 use crate::differentiate::is_elementary_function;
-use crate::constants::E;
 use crate::parser::{BinaryOpKind, Expr};
 
 pub fn simplify(expr: Expr, s: bool) -> Expr {
@@ -15,6 +14,8 @@ pub fn simplify(expr: Expr, s: bool) -> Expr {
                 (BinaryOpKind::Sub, Expr::Number(a), Expr::Number(b)) => Expr::Number(a - b),
                 (BinaryOpKind::Mul, Expr::Number(a), Expr::Number(b)) => Expr::Number(a * b),
                 (BinaryOpKind::Div, Expr::Number(a), Expr::Number(b)) => Expr::Number(a / b),
+                (BinaryOpKind::Pow, _, Expr::Number(0.0)) => Expr::Number(1.0),
+                (BinaryOpKind::Pow, left, Expr::Number(1.0)) => left,
                 (BinaryOpKind::Pow, Expr::Number(a), Expr::Number(b)) => Expr::Number(a.powf(b)),
                 (BinaryOpKind::Mul, Expr::Number(0.0), _) => Expr::Number(0.0),
                 (BinaryOpKind::Mul, _, Expr::Number(0.0)) => Expr::Number(0.0),

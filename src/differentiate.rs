@@ -21,19 +21,16 @@ pub fn differentiate(expr: Expr, var: String) -> Expr {
 fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var: String) -> Expr {
     match op {
         crate::parser::BinaryOpKind::Add => Expr::BinaryOp(
-            // (a + b)' = a' + b'
             crate::parser::BinaryOpKind::Add,
             Box::new(differentiate(left, var.clone())),
             Box::new(differentiate(right, var)),
         ),
         crate::parser::BinaryOpKind::Sub => Expr::BinaryOp(
-            // (a - b)' = a' - b'
             crate::parser::BinaryOpKind::Sub,
             Box::new(differentiate(left, var.clone())),
             Box::new(differentiate(right, var)),
         ),
         crate::parser::BinaryOpKind::Mul => Expr::BinaryOp(
-            // (a * b)' = a' * b + a * b'
             crate::parser::BinaryOpKind::Add,
             Box::new(Expr::BinaryOp(
                 crate::parser::BinaryOpKind::Mul,
@@ -47,7 +44,6 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
             )),
         ),
         crate::parser::BinaryOpKind::Div => {
-            // (f / g)' = (f' * g - f * g') / (g * g)
             let left_diff = differentiate(left.clone(), var.clone());
             let right_diff = differentiate(right.clone(), var.clone());
             let left_mul_right = Expr::BinaryOp(
@@ -71,12 +67,55 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
                 Box::new(right.clone()),
             );
             Expr::BinaryOp(crate::parser::BinaryOpKind::Div, Box::new(numerator), Box::new(denominator))
-        }, crate::parser::BinaryOpKind::Pow => {
-            // TODO add differentiation for exponents
-            panic!("Not implemented")
+        },
+        crate::parser::BinaryOpKind::Pow => {
+            // General case: (f(x)^g(x))' = g(x) f(x)^(g(x)-1) f'(x) + f(x)^g(x) ln(f(x)) g'(x)
+            let base = left.clone();
+            let exponent = right.clone();
+            let base_diff = differentiate(base.clone(), var.clone());
+            let exponent_diff = differentiate(exponent.clone(), var.clone());
+
+            let term1 = Expr::BinaryOp(
+                crate::parser::BinaryOpKind::Mul,
+                Box::new(exponent.clone()), // g(x)
+                Box::new(Expr::BinaryOp(
+                    crate::parser::BinaryOpKind::Mul,
+                    Box::new(Expr::BinaryOp(
+                        crate::parser::BinaryOpKind::Pow,
+                        Box::new(base.clone()),
+                        Box::new(Expr::BinaryOp(
+                            crate::parser::BinaryOpKind::Sub,
+                            Box::new(exponent.clone()),
+                            Box::new(Expr::Number(1.0)),
+                        )),
+                    )),
+                    Box::new(base_diff),
+                )),
+            );
+
+            let term2 = Expr::BinaryOp(
+                crate::parser::BinaryOpKind::Mul,
+                Box::new(Expr::BinaryOp(
+                    crate::parser::BinaryOpKind::Mul,
+                    Box::new(Expr::BinaryOp(
+                        crate::parser::BinaryOpKind::Pow,
+                        Box::new(base.clone()),
+                        Box::new(exponent.clone()),
+                    )),
+                    Box::new(Expr::BinaryOp(
+                        crate::parser::BinaryOpKind::Mul,
+                        Box::new(Expr::Var("ln".to_string())),
+                        Box::new(base.clone()),
+                    )),
+                )),
+                Box::new(exponent_diff),
+            );
+
+            Expr::BinaryOp(crate::parser::BinaryOpKind::Add, Box::new(term1), Box::new(term2))
         }
     }
 }
+
 
 fn diff_unary_op(op: crate::parser::UnaryOpKind, expr: Expr, var: String) -> Expr {
     match op {
@@ -114,7 +153,7 @@ fn diff_function(expr: Expr, args: Vec<Expr>, var: String) -> Expr {
 }
 
 pub fn is_elementary_function(name: &str) -> bool {
-    name == "exp" || name == "ln" || name == "id"
+    name == "exp" || name == "ln" ||  name == "sin" || name == "cos" || name == "id"
 }
 
 fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) -> Expr {
@@ -131,6 +170,8 @@ fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) 
                 panic!("log function can only have one argument");
             }
         },
+        "sin" => Expr::Var("cos".to_string()),
+        "cos" => Expr::UnaryOp(crate::parser::UnaryOpKind::Neg, Box::new(Expr::Var("sin".to_string()))),
         _ => panic!("Not implemented"),
     }
 }

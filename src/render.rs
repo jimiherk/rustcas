@@ -44,6 +44,8 @@ pub fn render_latex(expr: Expr) -> String {
 fn render_elementary_function(name: &str) -> String {
     match name {
         "exp" => "\\exp".to_string(),
+        "sin" => "\\sin".to_string(),
+        "cos" => "\\cos".to_string(),
         "ln" => "\\ln".to_string(),
         "id" => "\\mathrm{id}".to_string(),
         _ => panic!("Not implemented"),
