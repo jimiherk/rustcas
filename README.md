@@ -1,6 +1,6 @@
 # RustCAS - Ein Computeralgebrasystem in Rust
 
-## [Dokumentation](https://github.com/jimiherk/rustcas/wiki)
+RustCAS ist ein Tool, welches zum Visualisieren, Absleiten, Integrieren etc. von Mathematischen Ausdrücken und Funktionen genutzt werden kann. Weitere Informationen gibt es in der [Dokumentation](https://github.com/jimiherk/rustcas/wiki).
 
 ## Developer-Team:
 * [Friedrich Darius](https://github.com/NinoDS), [friedrich@computeralgebra.systems](mailto:friedrich@computeralgebra.systems)
@@ -44,3 +44,8 @@ npm run build
 ```
 Das fertige Bundle kann in `./ui/dist/` gefunden werden.
 
+> [!TIP]
+> Es geht jetzt auch einfacher! Einfach nur Schritt 2 ausführen (`npm run build` im root ausführen), dann sollte alles gebaut werden. Außerdem ist das fertige Bundel nun in `/dist/`.
+
+## Known Bugs
+Den Entwicklern bekannte Fehler findet man in den [Issues](https://github.com/jimiherk/rustcas/issues) mit dem Labels **bug** oder **wontfix**.
