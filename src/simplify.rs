@@ -1,5 +1,4 @@
 use crate::differentiate::is_elementary_function;
-use crate::constants::E;
 use crate::parser::{BinaryOpKind, Expr};
 
 pub fn simplify(expr: Expr, s: bool) -> Expr {
