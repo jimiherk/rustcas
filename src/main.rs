@@ -19,7 +19,7 @@ mod plot;
 fn main() {
     // let source = "a * (b + c)";
     // let source = "(x^3) + 3 * (x^2) + 2";
-    let source = "cos(x)";
+    let source = "5*(x^2)";
     // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
     let mut tokens = vec![];
@@ -32,7 +32,7 @@ fn main() {
     let mut parser = parser::Parser::new(tokens);
     let expression = parser.expression();
 
-    println!("expression: {:?}", expression.clone());
-    println!("expression: {:?}", simplify(expression.clone(), false));
-    println!("{}", render_latex(simplify(differentiate(expression.clone(), "x".to_string()), false)));
+    let diff = differentiate(expression.clone(), "x".to_string());
+    println!("{}", render_latex(diff.clone()));
+    println!("{}", render_latex(simplify(diff.clone(), false)));
 }
