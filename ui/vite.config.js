@@ -6,5 +6,9 @@ export default defineConfig({
     plugins: [
         wasm(),
         topLevelAwait()
-    ]
+    ],
+    build: {
+        target: "es2016",
+        outDir: "../dist",
+    },
 });
