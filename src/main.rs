@@ -5,6 +5,8 @@ use crate::simplify::simplify;
 use crate::integrate::integrate;
 use crate::parser::Expr;
 
+use wasm_bindgen::prelude::*;
+
 mod scanner;
 mod parser;
 mod differentiate;
@@ -35,4 +37,56 @@ fn main() {
     let diff = differentiate(expression.clone(), "x".to_string());
     println!("{}", render_latex(diff.clone()));
     println!("{}", render_latex(simplify(diff.clone(), false)));
+}
+
+#[wasm_bindgen]
+pub fn differentiate_expression(expression: String, variable: String) -> String {
+    let mut scanner = Scanner::new(&expression);
+    let mut tokens = vec![];
+    while let token = scanner.scan_token() {
+        tokens.push(token);
+        if token.kind == scanner::TokenType::Eof {
+            break;
+        }
+    }
+    let mut parser = parser::Parser::new(tokens);
+    let expression = parser.expression();
+
+    let diff = differentiate(expression.clone(), variable);
+    render_latex(simplify(diff.clone(), false))
+}
+
+#[wasm_bindgen]
+pub fn integrate_expression(expression: String, variable: String, lower: f64, upper: f64) -> String {
+    let mut scanner = Scanner::new(&expression);
+    let mut tokens = vec![];
+    while let token = scanner.scan_token() {
+        tokens.push(token);
+        if token.kind == scanner::TokenType::Eof {
+            break;
+        }
+    }
+    let mut parser = parser::Parser::new(tokens);
+    let expression = parser.expression();
+
+    if let Ok(integral) = integrate(expression.clone(), variable, lower, upper) {
+        return render_latex(simplify(integral.clone(), false));
+    }
+    "Error".to_string()
+}
+
+#[wasm_bindgen]
+pub fn simplify_expression(expression: String) -> String {
+    let mut scanner = Scanner::new(&expression);
+    let mut tokens = vec![];
+    while let token = scanner.scan_token() {
+        tokens.push(token);
+        if token.kind == scanner::TokenType::Eof {
+            break;
+        }
+    }
+    let mut parser = parser::Parser::new(tokens);
+    let expression = parser.expression();
+
+    render_latex(simplify(expression.clone(), false))
 }

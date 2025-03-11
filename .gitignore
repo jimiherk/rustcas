@@ -3,3 +3,6 @@
 Cargo.lock
 *.http
 .env
+node_modules/
+pkg
+pnpm-lock.yaml
