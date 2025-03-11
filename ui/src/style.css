@@ -61,3 +61,19 @@
     .hidden {
         display: none;
     }
+
+    img {
+        width: 50%;
+        border: solid black 3px;
+    }
+
+    #output {
+        margin-top: 2em;
+        display: flex;
+        flex-direction: row;
+    }
+
+    #output #results {
+        font-weight: bolder;
+        margin-left: 2em;
+    }

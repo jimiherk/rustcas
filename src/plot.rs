@@ -1,7 +1,8 @@
 use crate::simplify::simplify;
 use crate::parser::{BinaryOpKind, Expr};
 use std::collections::HashMap;
-use image::{RgbImage, Rgb, GenericImage};
+use std::io::Cursor;
+use image::{RgbImage, Rgb, GenericImage, ImageFormat};
 
 pub fn substitute_for_variable(expr: Expr, variables: &HashMap<String, Expr>) -> Expr {
     match expr {
@@ -46,7 +47,7 @@ pub fn values_table(expr: Expr) -> (Vec<Expr>, Vec<Expr>) {
     (x_values, y_values)
 }
 
-pub fn plot(expr: Expr) {
+pub fn plot(expr: Expr) -> Vec<u8> {
     let (x_values, y_values) = values_table(expr);
 
     let width = 800;
@@ -121,5 +122,9 @@ pub fn plot(expr: Expr) {
         }
     }
 
-    img.save("graph.png").unwrap();
+    let mut bytes: Vec<u8> = Vec::new();
+
+    img.write_to(&mut Cursor::new(&mut bytes), ImageFormat::Png);
+
+    bytes
 }

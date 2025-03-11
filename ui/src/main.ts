@@ -1,4 +1,4 @@
-import { differentiate_expression, integrate_expression, simplify_expression } from '../wasm/index';
+import { differentiate_expression, integrate_expression, simplify_expression, plot_expression } from '../wasm/index';
 import TeXToSVG from "tex-to-svg";
 
 document.querySelector('select#operation')?.addEventListener('change', () => {
@@ -53,5 +53,21 @@ document.querySelector('form#inputForm')?.addEventListener('submit', () => {
             throw new Error('Invalid operation');
     }
 
-    output.innerHTML = TeXToSVG(result);
+    let plot: Uint8Array | string = plot_expression(input);
+
+    plot = URL.createObjectURL(new Blob([plot.buffer], { type: 'image/png' }));
+
+    output.innerHTML = '';
+
+    let imageElement = document.createElement('img');
+    imageElement.src = plot as string;
+
+    output.appendChild(imageElement);
+
+    let outputElement = document.createElement('div');
+    outputElement.id = 'results';
+    outputElement.innerHTML = `<p>Deine Eingabe:</p> ${TeXToSVG(input)}`;
+    outputElement.innerHTML += `<p>Ergebnis:</p> ${TeXToSVG(result)}`;
+
+    output.appendChild(outputElement);
 });
