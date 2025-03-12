@@ -32,7 +32,7 @@ Für die gesamte Rechenlogik, sowie das Plotting wird [Rust](https://www.rust-la
 ```sh
   npm run build
 ```
-Nun ist das Wasm-bundle fertig und unter `ui/wasm/` zu finden.
+Nun ist das Wasm-Bundle fertig und unter `ui/wasm/` zu finden.
 
 ### 3. Vite-build vorbereiten
 Navigiere ins `ui`-Verzeichnis:
@@ -49,10 +49,10 @@ Nun, da alle Module installiert sind kann Vite ganz einfach gebuildet werden:
 ```sh
   npm run build
 ```
-Das fertige Bundle kann in `./ui/dist/` gefunden werden.
+Das fertige Bundle kann in `./ui/dist/` gefunden werden. Zum Ausführen des Bundles eignet sich ein Webserver wie bspw. Apache. Getestet wurde mithilfe des NPM-Moduls [http-server](https://www.npmjs.com/package/http-server).
 
 > [!TIP]
-> Es geht jetzt auch einfacher! Einfach nur Schritt 2 ausführen (`npm run build` im root ausführen), dann sollte alles gebaut werden. Außerdem ist das fertige Bundel nun in `/dist/`.
+> Es geht jetzt auch einfacher! Einfach nur Schritt 2 ausführen (`npm run build` im root ausführen), dann sollte alles gebuildet werden. Außerdem ist das fertige Bundel nun in `/dist/`.
 
 ## Known Bugs
 Den Entwicklern bekannte Fehler findet man in den [Issues](https://github.com/jimiherk/rustcas/issues) mit dem Labels **bug** oder **wontfix**.
