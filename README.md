@@ -34,7 +34,7 @@ Für die gesamte Rechenlogik, sowie das Plotting wird [Rust](https://www.rust-la
 ```
 Der Build-Befehl buildet erst einmal das Wasm-Bundle (`./ui/wasm/`) und dann das Vite-Bundle.
 
-Das fertige Bundle kann in `./ui/dist/` gefunden werden. Zum Ausführen des Bundles eignet sich ein Webserver wie bspw. Apache. Getestet wurde mithilfe des NPM-Moduls [http-server](https://www.npmjs.com/package/http-server).
+Das fertige Bundle kann in `./dist/` gefunden werden. Zum Ausführen des Bundles eignet sich ein Webserver wie bspw. Apache. Getestet wurde mithilfe des NPM-Moduls [http-server](https://www.npmjs.com/package/http-server).
 
 ## Known Bugs
 Den Entwicklern bekannte Fehler findet man in den [Issues](https://github.com/jimiherk/rustcas/issues) mit dem Labels **bug** oder **wontfix**.
