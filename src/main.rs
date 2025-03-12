@@ -18,7 +18,7 @@ mod plot;
 
 fn main() {
     // let source = "a * (b + c)";
-    let source = "2 * (x^2) + a";
+    let source = "2 * x + 2 * x";
     // let source = "cos(x)";
     // let source = "7 * (x^4) - 3 * (x^3) + 5 * (x^2) - 8 * x + 2";
     let mut scanner = Scanner::new(source);
