@@ -4,6 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "wasm-pack build --out-dir ui/wasm --out-name index && npm run build --prefix ui"
+        "build-wasm": "wasm-pack build --out-dir ui/wasm --out-name index",
+        "build-ui": "npm run build --prefix ui",
+        "build": "npm run build-wasm && npm run build-ui"
     }
 }

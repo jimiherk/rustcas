@@ -1,4 +1,4 @@
-import { differentiate_expression, integrate_expression, simplify_expression, plot_expression } from '../wasm/index';
+import * as wasm from '../wasm/index';
 import TeXToSVG from "tex-to-svg";
 
 // Event-Listener für die Änderung der Operation
@@ -41,24 +41,36 @@ document.querySelector('form#inputForm')?.addEventListener('submit', () => {
     const upperInput = document.querySelector('input#upper') as HTMLInputElement;
 
     let result: string;
+    let antiderivative: string | null = null;
     console.log(operation);
     // Ergebnis basierend auf der ausgewählten Operation berechnen
     switch (operation) {
         case 'Ableiten':
-            result = differentiate_expression(input, varInput.value);
+            result = wasm.differentiate_expression(input, varInput.value);
             break;
         case 'Integrieren':
-            result = integrate_expression(input, varInput.value, parseFloat(lowerInput.value), parseFloat(upperInput.value));
+            if (lowerInput.value !== '' || upperInput.value !== '') {
+                result = wasm.integrate_expression(input, varInput.value, parseFloat(lowerInput.value), parseFloat(upperInput.value));
+            } else {
+                result = "";
+            }
+            result = (lowerInput.value !== '' || upperInput.value !== '')
+            ? wasm.integrate_expression(input, varInput.value, parseFloat(lowerInput.value), parseFloat(upperInput.value))
+            : "";
+            let ad = wasm.find_antiderivative(input, varInput.value);
+            if (ad !== null) {
+                antiderivative = ad;
+            }
             break;
         case 'Vereinfachen':
-            result = simplify_expression(input);
+            result = wasm.simplify_expression(input);
             break;
         default:
             throw new Error('Invalid operation');
     }
 
     // Plot der Eingabe erzeugen
-    let plot: Uint8Array | string = plot_expression(input);
+    let plot: Uint8Array | string = wasm.plot_expression(input);
     plot = URL.createObjectURL(new Blob([plot.buffer], { type: 'image/png' }));
 
     output.innerHTML = '';
@@ -73,5 +85,11 @@ document.querySelector('form#inputForm')?.addEventListener('submit', () => {
     outputElement.id = 'results';
     outputElement.innerHTML = `<p>Deine Eingabe:</p> ${TeXToSVG(input)}`;
     outputElement.innerHTML += `<p>Ergebnis:</p> ${TeXToSVG(result)}`;
+
+    // Falls vorhanden, Stammfunktion anzeigen
+    if (antiderivative !== null) {
+        outputElement.innerHTML += `<p>Stammfunktion:</p> ${TeXToSVG(antiderivative)}`;
+    }
+
     output.appendChild(outputElement);
 });

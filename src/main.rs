@@ -63,6 +63,29 @@ pub fn integrate_expression(expression: String, variable: String, lower: f64, up
 }
 
 #[wasm_bindgen]
+pub fn find_antiderivative(expression: String, variable: String) -> Result<String, String> {
+    // Scanner initialisieren und Token sammeln
+    let mut scanner = Scanner::new(&expression);
+    let mut tokens = vec![];
+    while let token = scanner.scan_token() {
+        tokens.push(token);
+        if token.kind == scanner::TokenType::Eof {
+            break;
+        }
+    }
+    // Parser initialisieren und Ausdruck parsen
+    let mut parser = parser::Parser::new(tokens);
+    let expression = parser.expression();
+
+    // Ausdruck integrieren und als LaTeX rendern
+    let integral = integrate_polynomial(expression.clone(), variable);
+    if let Ok(integral) = integral {
+        return Ok(render_latex(simplify(integral.clone(), false)));
+    }
+    Err(integral.err().unwrap())
+}
+
+#[wasm_bindgen]
 pub fn simplify_expression(expression: String) -> String {
     // Scanner initialisieren und Token sammeln
     let mut scanner = Scanner::new(&expression);
