@@ -122,3 +122,22 @@ pub fn plot_expression(expression: String) -> Vec<u8> {
     // Ausdruck plotten
     plot(expression)
 }
+
+#[wasm_bindgen]
+pub fn render_latex_expression(expression: String) -> String {
+    // Scanner initialisieren und Token sammeln
+    let mut scanner = Scanner::new(&expression);
+    let mut tokens = vec![];
+    while let token = scanner.scan_token() {
+        tokens.push(token);
+        if token.kind == scanner::TokenType::Eof {
+            break;
+        }
+    }
+    // Parser initialisieren und Ausdruck parsen
+    let mut parser = parser::Parser::new(tokens);
+    let expression = parser.expression();
+
+    // Ausdruck als LaTeX rendern
+    render_latex(expression)
+}

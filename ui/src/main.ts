@@ -83,7 +83,7 @@ document.querySelector('form#inputForm')?.addEventListener('submit', () => {
     // Ergebnis anzeigen
     let outputElement = document.createElement('div');
     outputElement.id = 'results';
-    outputElement.innerHTML = `<p>Deine Eingabe:</p> ${TeXToSVG(input)}`;
+    outputElement.innerHTML = `<p>Deine Eingabe:</p> ${TeXToSVG(wasm.render_latex_expression(input))}`;
     outputElement.innerHTML += `<p>Ergebnis:</p> ${TeXToSVG(result)}`;
 
     // Falls vorhanden, Stammfunktion anzeigen
