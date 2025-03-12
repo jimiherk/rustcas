@@ -24,8 +24,8 @@ pub fn integrate_polynomial(expr: Expr, var: String) -> Expr {
         Expr::Var(v) => {
             if v == var {
                 BinaryOp(BinaryOpKind::Mul,
-                         Box::new(Expr::Number(0.5)),
-                         Box::new(BinaryOp(BinaryOpKind::Pow, Box::new(Expr::Var(v)), Box::new(Expr::Number(2.0))))
+                            Box::new(Expr::Number(0.5)),
+                            Box::new(BinaryOp(BinaryOpKind::Pow, Box::new(Expr::Var(v)), Box::new(Expr::Number(2.0))))
                 )
             } else {
                 BinaryOp(BinaryOpKind::Mul, Box::new(Expr::Var(v)), Box::new(Expr::Var(var)))
