@@ -1,9 +1,13 @@
 use crate::parser::{BinaryOpKind, Expr};
 use crate::parser::Expr::Number;
 
+// Die Hauptfunktion zur Ableitung eines Ausdrucks nach einer Variablen.
 pub fn differentiate(expr: Expr, var: String) -> Expr {
     match expr {
-        Expr::Number(_) => Expr::Number(0.0),
+        Expr::Number(_) => Expr::Number(0.0), // Konstante Zahlen haben immer die Ableitung 0
+
+        // Die Ableitung einer Variablen ist 1, wenn sie mit der gesuchten Variablen übereinstimmt,
+        // andernfalls ist sie 0 (da sie dann als Konstante betrachtet wird)
         Expr::Var(v) => {
             if v == var {
                 Expr::Number(1.0)
@@ -11,8 +15,13 @@ pub fn differentiate(expr: Expr, var: String) -> Expr {
                 Expr::Number(0.0)
             }
         }
+        // Differentiation für binäre Operationen wie +, -, *, /
         Expr::BinaryOp(op, left, right) => diff_binary_op(op, *left, *right, var),
+
+        // Differentiation für unäre Operationen (wie Negation)
         Expr::UnaryOp(op, expr) => diff_unary_op(op, *expr, var),
+
+        // Differentiation für Funktionsaufrufe
         Expr::Call(expr, args) => diff_function(*expr, args, var),
         _ => panic!("Not implemented"),
     }
@@ -20,6 +29,7 @@ pub fn differentiate(expr: Expr, var: String) -> Expr {
 
 fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var: String) -> Expr {
     match op {
+        // Ableitung von Addition und Subtraktion erfolgt komponentenweise
         crate::parser::BinaryOpKind::Add => Expr::BinaryOp(
             crate::parser::BinaryOpKind::Add,
             Box::new(differentiate(left, var.clone())),
@@ -30,6 +40,8 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
             Box::new(differentiate(left, var.clone())),
             Box::new(differentiate(right, var)),
         ),
+
+        // Ableitung von Multiplikation mit Produktregel
         crate::parser::BinaryOpKind::Mul => Expr::BinaryOp(
             crate::parser::BinaryOpKind::Add,
             Box::new(Expr::BinaryOp(
@@ -43,6 +55,8 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
                 Box::new(differentiate(right, var)),
             )),
         ),
+
+        // Ableitung von Division mit Quotientenregel
         crate::parser::BinaryOpKind::Div => {
             let left_diff = differentiate(left.clone(), var.clone());
             let right_diff = differentiate(right.clone(), var.clone());
@@ -68,7 +82,10 @@ fn diff_binary_op(op: crate::parser::BinaryOpKind, left: Expr, right: Expr, var:
             );
             Expr::BinaryOp(crate::parser::BinaryOpKind::Div, Box::new(numerator), Box::new(denominator))
         },
+
+        // Ableitung von Potenzfunktionen
         crate::parser::BinaryOpKind::Pow => {
+            // Ableitung von f(x)^g(x) mit der Regel:
             // General case: (f(x)^g(x))' = g(x) f(x)^(g(x)-1) f'(x) + f(x)^g(x) ln(f(x)) g'(x)
             let base = left.clone();
             let exponent = right.clone();
@@ -152,10 +169,12 @@ fn diff_function(expr: Expr, args: Vec<Expr>, var: String) -> Expr {
     }
 }
 
+// Prüft, ob eine Funktion elementar ist (z.B. exp, ln, sin, cos)
 pub fn is_elementary_function(name: &str) -> bool {
     name == "exp" || name == "ln" ||  name == "sin" || name == "cos" || name == "id"
 }
 
+// Ableitungen von elementaren Funktionen
 fn differentiate_elementary_function(name: &str, arg_index: usize, var: String) -> Expr {
     match name {
         "exp" => Expr::Var("exp".to_string()),
