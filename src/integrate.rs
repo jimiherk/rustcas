@@ -23,9 +23,12 @@ pub fn integrate_polynomial(expr: Expr, var: String) -> Expr {
         Expr::Number(a) => Expr::BinaryOp(BinaryOpKind::Mul, Box::new(Expr::Number(a)), Box::new(Expr::Var(var))),
         Expr::Var(v) => {
             if v == var {
-                Expr::Number(1.0)
+                BinaryOp(BinaryOpKind::Mul,
+                         Box::new(Expr::Number(0.5)),
+                         Box::new(BinaryOp(BinaryOpKind::Pow, Box::new(Expr::Var(v)), Box::new(Expr::Number(2.0))))
+                )
             } else {
-                Expr::Number(0.0)
+                BinaryOp(BinaryOpKind::Mul, Box::new(Expr::Var(v)), Box::new(Expr::Var(var)))
             }
         }
         Expr::BinaryOp(op, left, right) => integrate_binary_op(op, *left, *right, var.clone()),
@@ -35,7 +38,7 @@ pub fn integrate_polynomial(expr: Expr, var: String) -> Expr {
 }
 
 fn integrate_binary_op(op: BinaryOpKind, left: Expr, right: Expr, var: String) -> Expr {
-    match (op, left, right) {
+    match (op, left.clone(), right.clone()) {
         (BinaryOpKind::Mul, Expr::Number(a), Expr::BinaryOp(BinaryOpKind::Pow, base, exponent)) => {
             // Dereferencing Box to access inner values
             if let (Expr::Var(x), Expr::Number(b)) = (*base, *exponent) {
@@ -55,7 +58,8 @@ fn integrate_binary_op(op: BinaryOpKind, left: Expr, right: Expr, var: String) -
             } else {
                 panic!("Unsupported exponentiation expression in polynomial integration");
             }
-        }
+        },
+        (BinaryOpKind::Add, left, right) => BinaryOp(BinaryOpKind::Add, Box::new(integrate_polynomial(left, var.clone())), Box::new(integrate_polynomial(right, var.clone()))),
         _ => panic!("Not implemented"),
     }
 }
