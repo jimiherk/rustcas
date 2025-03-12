@@ -63,8 +63,8 @@ fn integrate_binary_op(op: BinaryOpKind, left: Expr, right: Expr, var: String) -
         (BinaryOpKind::Mul, Expr::Number(a), Expr::Var(v)) => {
             if v == var {
                 BinaryOp(BinaryOpKind::Mul,
-                         Box::new(Expr::Number(a * 0.5)),
-                         Box::new(BinaryOp(BinaryOpKind::Pow, Box::new(Expr::Var(v)), Box::new(Expr::Number(2.0))))
+                    Box::new(Expr::Number(a * 0.5)),
+                    Box::new(BinaryOp(BinaryOpKind::Pow, Box::new(Expr::Var(v)), Box::new(Expr::Number(2.0))))
                 )
             } else {
                 BinaryOp(BinaryOpKind::Mul, Box::new(BinaryOp(BinaryOpKind::Mul, Box::new(Expr::Number(a)), Box::new(Expr::Var(v)))), Box::new(Expr::Var(var)))
