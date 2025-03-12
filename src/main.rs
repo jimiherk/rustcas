@@ -2,7 +2,7 @@ use crate::differentiate::differentiate;
 use crate::render::{render_latex};
 use crate::scanner::Scanner;
 use crate::simplify::simplify;
-use crate::integrate::integrate;
+use crate::integrate::{integrate_polynomial};
 use crate::parser::Expr;
 use crate::plot::{plot, substitute_for_variable};
 

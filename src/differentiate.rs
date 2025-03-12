@@ -1,4 +1,4 @@
-use crate::parser::Expr;
+use crate::parser::{BinaryOpKind, Expr};
 use crate::parser::Expr::Number;
 
 pub fn differentiate(expr: Expr, var: String) -> Expr {
