@@ -100,7 +100,7 @@ pub fn simplify_expression(expression: String) -> String {
     let expression = parser.expression();
 
     // Ausdruck vereinfachen und als LaTeX rendern
-    render_latex(simplify(expression.clone(), false))
+    render_latex(&simplify(expression.clone(), false))
 }
 
 #[wasm_bindgen]
@@ -138,5 +138,5 @@ pub fn render_latex_expression(expression: String) -> String {
     let expression = parser.expression();
 
     // Ausdruck als LaTeX rendern
-    render_latex(expression)
+    render_latex(&expression)
 }
