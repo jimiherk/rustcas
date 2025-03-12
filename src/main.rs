@@ -10,7 +10,6 @@ use wasm_bindgen::prelude::*;
 mod scanner;
 mod parser;
 mod differentiate;
-mod eval;
 mod render;
 mod simplify;
 mod integrate;
@@ -37,7 +36,7 @@ pub fn differentiate_expression(expression: String, variable: String) -> String 
 
     // Ausdruck differenzieren und als LaTeX rendern
     let diff = differentiate(expression.clone(), variable);
-    render_latex(simplify(diff.clone(), false))
+    render_latex(&simplify(diff.clone(), false))
 }
 
 #[wasm_bindgen]
@@ -57,7 +56,7 @@ pub fn integrate_expression(expression: String, variable: String, lower: f64, up
 
     // Ausdruck integrieren und als LaTeX rendern
     if let Ok(integral) = approx_integral(expression.clone(), variable, lower, upper) {
-        return render_latex(simplify(integral.clone(), false));
+        return render_latex(&simplify(integral.clone(), false));
     }
     "Error".to_string()
 }
@@ -80,7 +79,7 @@ pub fn find_antiderivative(expression: String, variable: String) -> Result<Strin
     // Ausdruck integrieren und als LaTeX rendern
     let integral = integrate_polynomial(expression.clone(), variable);
     if let Ok(integral) = integral {
-        return Ok(render_latex(simplify(integral.clone(), false)));
+        return Ok(render_latex(&simplify(integral.clone(), false)));
     }
     Err(integral.err().unwrap())
 }
