@@ -1,4 +1,4 @@
-use crate::parser::{BinaryOpKind, Expr};
+use crate::parser::{BinaryOpKind, Expr, Expr::BinaryOp};
 use crate::simplify::simplify;
 use crate::substitute::substitute;
 

@@ -2,10 +2,9 @@ use crate::differentiate::differentiate;
 use crate::render::{render_latex};
 use crate::scanner::Scanner;
 use crate::simplify::simplify;
-use crate::integrate::{integrate_polynomial};
+use crate::integrate::{integrate_polynomial, approx_integral};
 use crate::parser::Expr;
 use crate::plot::{plot, substitute_for_variable};
-
 use wasm_bindgen::prelude::*;
 
 mod scanner;
@@ -57,7 +56,7 @@ pub fn integrate_expression(expression: String, variable: String, lower: f64, up
     let expression = parser.expression();
 
     // Ausdruck integrieren und als LaTeX rendern
-    if let Ok(integral) = integrate(expression.clone(), variable, lower, upper) {
+    if let Ok(integral) = approx_integral(expression.clone(), variable, lower, upper) {
         return render_latex(simplify(integral.clone(), false));
     }
     "Error".to_string()
