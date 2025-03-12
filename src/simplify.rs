@@ -75,7 +75,7 @@ fn simplify_call(func: Expr, args: &Vec<Expr>, s: bool) -> Expr {
                 return args[0].clone()
             } else if is_elementary_function(&name){
                 if s {
-                    evaluate_elementary_function(&name);
+                    evaluate_elementary_function(&name, args.clone());
                 }
                 return Expr::Call(Box::new(func.clone()), args.clone());
             }
@@ -95,9 +95,31 @@ fn simplify_call(func: Expr, args: &Vec<Expr>, s: bool) -> Expr {
     }
 }
 
-fn evaluate_elementary_function(name: &str) -> Expr {
-    // TODO
+fn evaluate_elementary_function(name: &str, args: Vec<Expr>) -> Expr {
+    // Elementare Funktionen haben nur ein Argument
+    assert!(args.len() == 1);
+    let arg = if let Expr::Number(x) = args[0].clone() {
+        x
+    } else {
+        panic!("Error: Expected number as argument for elementary function");
+    };
+    // Berechnung der elementaren Funktion
     match name {
-        _ => panic!("Not implemented")
+        "id" => {
+            Expr::Number(arg)
+        },
+        "exp" => {
+            Expr::Number(arg.exp())
+        },
+        "ln" => {
+            Expr::Number(arg.ln())
+        },
+        "sin" => {
+            Expr::Number(arg.sin())
+        },
+        "cos" => {
+            Expr::Number(arg.cos())
+        },
+        _ => panic!("Error: Unsupported elementary function: {}", name),
     }
 }

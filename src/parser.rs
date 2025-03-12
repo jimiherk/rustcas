@@ -26,14 +26,6 @@ pub enum Expr {
     UnaryOp(UnaryOpKind, Box<Expr>),
 }
 
-// Definiert die Arten von Funktionen
-#[derive(PartialEq)]
-enum FunctionKind {
-    Function,
-    Method,
-    Anonymous,
-}
-
 // Parser-Struktur
 pub struct Parser<'src> {
     tokens: Vec<Token<'src>>,
